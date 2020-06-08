@@ -23,9 +23,9 @@
 
                             <!-- Delete Album -->
                             <form action="{% url 'music:album-delete' album.id %}" method="post" style="display: inline;">
-                                {% csrf_token %}
-                                <input type="hidden" name="album_id" value="{{ album.id }}" />
-                                <button type="submit" class="btn btn-default btn-sm">
+                                 <input type="hidden" name="album_id" value="{{ album.id }}" />
+                              {% csrf_token %}
+                                 <button type="submit" class="btn btn-default btn-sm">
                                     <span class="glyphicon glyphicon-trash"></span>
                                 </button>
                             </form>
@@ -41,7 +41,10 @@
                 
             {% endfor %}
     </div>
-  
+    
+    <div class="panel-footer">
+        Don't have an account? <a href="{% url 'music:register' %}">Click here</a> to register.
+    </div>
 
 </div>
 {% endblock %}

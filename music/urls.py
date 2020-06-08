@@ -25,4 +25,9 @@ urlpatterns = [
      
     # /music/album/2/delete 
      url(r'album/(?P<pk>[0-9]+)/delete/$',views.AlbumDelete.as_view(),name='album-delete'), #for album deleting
+
+    # /music/5/create_song/
+    url(r'^(?P<album_id>[0-9]+)/create_song/$', views.create_song, name='create_song'),
+
+    
 ]

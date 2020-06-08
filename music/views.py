@@ -4,10 +4,13 @@ from django.views.generic.edit import CreateView, UpdateView, DeleteView # means
 from django.core.urlresolvers import reverse_lazy
 from django.shortcuts import render, redirect #this one redirect you to your home page and whatever you are
 from django.contrib.auth import authenticate, login #this one is for your authenticate of your username and password that present in your database or not just verify... and login provides session-id so that user do not want to login or authenticate for every pages in browser that you are..
+from django.shortcuts import render, get_object_or_404
 from django.views import generic
 from django.views.generic import View
-from .models import Album
-from .forms import UserForm
+from .models import Album, Song
+from .forms import AlbumForm, SongForm, UserForm
+
+AUDIO_FILE_TYPES = ['wav', 'mp3', 'ogg']
 
 class IndexView(generic.ListView):
     template_name= 'music/index.html'
@@ -36,6 +39,41 @@ class AlbumDelete(DeleteView):
     #here we are creating new album_object
     model= Album
     success_url = reverse_lazy('music:index') #when you deleted album it redirect to home page by using reverse_lazy function
+
+def create_song(request, album_id):
+    form = SongForm(request.POST or None, request.FILES or None)
+    album = get_object_or_404(Album, pk=album_id)
+    if form.is_valid():
+        albums_songs = album.song_set.all()
+        for s in albums_songs:
+            if s.song_title == form.cleaned_data.get("song_title"):
+                context = {
+                    'album': album,
+                    'form': form,
+                    'error_message': 'You already added that song',
+                }
+                return render(request, 'music/create_song.html', context)
+        song = form.save(commit=False)
+        song.album = album
+        song.audio_file = request.FILES['audio_file']
+        file_type = song.audio_file.url.split('.')[-1]
+        file_type = file_type.lower()
+        if file_type not in AUDIO_FILE_TYPES:
+            context = {
+                'album': album,
+                'form': form,
+                'error_message': 'Audio file must be WAV, MP4, or OGG',
+            }
+            return render(request, 'music/create_song.html', context)
+
+        song.save()
+        return render(request, 'music/detail.html', {'album': album})
+    context = {
+        'album': album,
+        'form': form,
+    }
+    return render(request, 'music/create_song.html', context)
+
 
 def logout_user(request):
     logout(request)
@@ -96,6 +134,8 @@ class UserFormView(View):
                     return redirect('music:index') # if user is login successfully it will be redirect to index or home page
 
         return render(request, self.template_name, {'form': form}) # if form is not valid than this will be return 
+
+
 
 
 

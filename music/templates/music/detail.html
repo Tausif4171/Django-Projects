@@ -24,14 +24,18 @@
         <div class="col-sm-8 col-md-9">
 
             <ul class="nav nav-pills" style="margin-bottom: 10px;">
-                <li class="active"><a href="{% url 'music:detail' album.id %}">View All</a></li>
-                <li><a href="#">Add New Song</a></li>
+                <li role="presentation" class="active"><a href="{% url 'music:detail' album.id %}">View All</a></li>
+                <li role="presentation"><a href="{% url 'music:create_song' album.id %}">Add New Song</a></li>
             </ul>
 
             <div class="panel panel-default">
                 <div class="panel-body">
 
                     <h3>All Songs</h3>
+
+                    {% if error_message %}
+                        <p><strong>{{ error_message }}</strong></p>
+                    {% endif %}
 
                     <table class="table">
                         <thead>
@@ -42,7 +46,24 @@
                             <th>Actions</th>
                         </tr>
                         </thead>
-
+                        <tbody>
+                        {% for song in album.song_set.all %}
+                            <tr>
+                                <!-- Song Title -->
+                                <td>{{ song.song_title }}</td>
+                                <!-- Audio File -->
+                                <td>
+                                    <a target="_blank" href="{{ song.audio_file.url }}">
+                                        <button type="button" class="btn btn-success btn-xs">
+                                            <span class="glyphicon glyphicon-play"></span>&nbsp; Play
+                                        </button>
+                                    </a>
+                                </td>
+                                <!--  -->
+                               
+                            </tr>
+                        {% endfor %}
+                        </tbody>
                     </table>
 
                 </div>
