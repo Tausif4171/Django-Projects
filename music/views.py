@@ -1,3 +1,5 @@
+from django.contrib.auth import authenticate, login
+from django.contrib.auth import logout
 from django.views.generic.edit import CreateView, UpdateView, DeleteView # means here we are importing methods for album
 from django.core.urlresolvers import reverse_lazy
 from django.shortcuts import render, redirect #this one redirect you to your home page and whatever you are
@@ -34,6 +36,32 @@ class AlbumDelete(DeleteView):
     #here we are creating new album_object
     model= Album
     success_url = reverse_lazy('music:index') #when you deleted album it redirect to home page by using reverse_lazy function
+
+def logout_user(request):
+    logout(request)
+    form = UserForm(request.POST or None)
+    context = {
+        "form": form,
+    }
+    return render(request, 'music/login.html', context)
+
+
+def login_user(request):
+    if request.method == "POST":
+        username = request.POST['username']
+        password = request.POST['password']
+        user = authenticate(username=username, password=password)
+        if user is not None:
+            if user.is_active:
+                login(request, user)
+                albums = Album.objects.filter(user=request.user)
+                return render(request, 'music/index.html', {'albums': albums})
+            else:
+                return render(request, 'music/login.html', {'error_message': 'Your account has been disabled'})
+        else:
+            return render(request, 'music/login.html', {'error_message': 'Invalid login'})
+    return render(request, 'music/login.html')      
+
 
 class UserFormView(View):
     form_class = UserForm # Here, from forms.py file we are accessing UserForm class 

@@ -10,6 +10,9 @@ urlpatterns = [
     #/music/register/
     url(r'^register/$',views.UserFormView.as_view(),name='register'),
 
+    url(r'^login_user/$', views.login_user, name='login_user'),
+    url(r'^logout_user/$', views.logout_user, name='logout_user'),
+
     #/music/<album_id>/
     url(r'^(?P<pk>[0-9]+)/$',views.DetailView.as_view(),name='detail'), #here we are writing as_view() function,
                                                                         # because we are converting our class into view function
