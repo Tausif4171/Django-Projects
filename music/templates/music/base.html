@@ -37,7 +37,7 @@
                     </a>
                 </li>
                 <li class="{% block songs_active %}{% endblock %}">
-                    <a href="#">
+                    <a href="{% url 'music:songs' 'all' %}">
                         <span class="glyphicon glyphicon-music" aria-hidden="true"></span>&nbsp; Songs
                     </a>
                 </li>

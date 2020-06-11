@@ -11,13 +11,13 @@
         <div class="col-sm-4 col-md-3">
             <div class="panel panel-default">
                 <div class="panel-body">
-                        <a href="{% url 'music:detail' album.id %}">
-                            {% if album.album_logo %}
-                                <img src="{{ album.album_logo.url }}" class="img-responsive">
-                            {% else %}
-                                <h3>No image to display</h3>
-                            {% endif %}
-                        </a>
+                    <a href="{% url 'music:detail' album.id %}">
+                        {% if album.album_logo %}
+                        <img src="{{ album.album_logo.url }}" class="img-responsive">
+                        {% else %}
+                        <h3>No image to display</h3>
+                        {% endif %}
+                    </a>
                     <h1>{{ album.album_title }} <small>{{ album.genre }}</small></h1>
                     <h2>{{ album.artist }}</h2>
                 </div>
@@ -29,17 +29,18 @@
 
             <ul class="nav nav-pills" style="margin-bottom: 10px;">
                 <li role="presentation"><a href="{% url 'music:detail' album.id %}">View All</a></li>
-                <li role="presentation" class="active"><a href="{% url 'music:create_song' album.id %}">Add New Song</a></li>
+                <li role="presentation" class="active"><a href="{% url 'music:create_song' album.id %}">Add New Song</a>
+                </li>
             </ul>
 
             <div class="panel panel-default">
                 <div class="panel-body">
                     <h3>Add a New Song</h3>
                     {% if error_message %}
-                        <p><strong>{{ error_message }}</strong></p>
+                    <p><strong>{{ error_message }}</strong></p>
                     {% endif %}
                     <!-- Here, enctype(ENCode TYPE) attribute specifies how the form-data should be encoded when submitting it to the server. multipart/form-data is one of the value of enctype attribute, which is used in form element that have a file upload. multi-part means form data divides into multiple parts and send to server. -->
-                    <form class="form-horizontal" role="form" action="" method="post" enctype="multipart/form-data"> 
+                    <form class="form-horizontal" role="form" action="" method="post" enctype="multipart/form-data">
                         {% csrf_token %}
                         <input type="hidden" name="album" value="{{ album }}">
                         <!-- Here, we are accessing 'form' from 'form_template.html'-->
@@ -61,4 +62,3 @@
 </div>
 
 {% endblock %}
-

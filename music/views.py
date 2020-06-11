@@ -1,5 +1,6 @@
 from django.contrib.auth import authenticate, login
 from django.contrib.auth import logout
+from django.http import JsonResponse
 from django.views.generic.edit import CreateView, UpdateView, DeleteView # means here we are importing methods for album
 from django.core.urlresolvers import reverse_lazy
 from django.shortcuts import render, redirect #this one redirect you to your home page and whatever you are
@@ -135,8 +136,42 @@ class UserFormView(View):
 
         return render(request, self.template_name, {'form': form}) # if form is not valid than this will be return 
 
+def favorite(request, song_id):
+    song = get_object_or_404(Song, pk=song_id)
+    try:
+        if song.is_favorite:
+            song.is_favorite = False
+        else:
+            song.is_favorite = True
+        song.save()
+    except (KeyError, Song.DoesNotExist):
+        return JsonResponse({'success': False})
+    finally:
+        return JsonResponse({'success': True})
 
 
-
-
+def delete_song(request, album_id, song_id):
+    album = get_object_or_404(Album, pk=album_id)
+    song = Song.objects.get(pk=song_id)
+    song.delete()
+    return render(request, 'music/detail.html', {'album': album})
     
+
+def songs(request, filter_by):
+    if not request.user.is_authenticated():
+        return render(request, 'music/login.html')
+    else:
+        try:
+            song_ids = []
+            for album in Album.objects.filter(user=request.user):
+                for song in album.song_set.all():
+                    song_ids.append(song.pk)
+            users_songs = Song.objects.filter(pk__in=song_ids)
+            if filter_by == 'favorites':
+                users_songs = users_songs.filter(is_favorite=True)
+        except Album.DoesNotExist:
+            users_songs = []
+        return render(request, 'music/songs.html', {
+            'song_list': users_songs,
+            'filter_by': filter_by,
+        })
