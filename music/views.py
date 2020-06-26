@@ -1,35 +1,75 @@
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login #this one is for your authenticate of your username and password that present in your database or not just verify... and login provides session-id so that user do not want to login or authenticate for every pages in browser that you are..
 from django.contrib.auth import logout
 from django.http import JsonResponse
 from django.views.generic.edit import CreateView, UpdateView, DeleteView # means here we are importing methods for album
 from django.core.urlresolvers import reverse_lazy
 from django.shortcuts import render, redirect #this one redirect you to your home page and whatever you are
-from django.contrib.auth import authenticate, login #this one is for your authenticate of your username and password that present in your database or not just verify... and login provides session-id so that user do not want to login or authenticate for every pages in browser that you are..
 from django.shortcuts import render, get_object_or_404
 from django.views import generic
 from django.views.generic import View
 from .models import Album, Song
 from .forms import AlbumForm, SongForm, UserForm
+from django.db.models import Q
 
 AUDIO_FILE_TYPES = ['wav', 'mp3', 'ogg']
+IMAGE_FILE_TYPES = ['png', 'jpg', 'jpeg']
 
-class IndexView(generic.ListView):
-    template_name= 'music/index.html'
-    context_object_name = 'all_albums' #you can give anyname and then give that same as to index.html
+def IndexView(request):
+    if not request.user.is_authenticated():
+        return render(request, 'music/login.html')
+    else:
+        all_albums = Album.objects.filter(user=request.user)
+        song_results = Song.objects.all()
+        query = request.GET.get("q")
+        if query:
+            all_albums = all_albums.filter(
+                Q(album_title__icontains=query) |
+                Q(artist__icontains=query)
+            ).distinct()
+            song_results = song_results.filter(
+                Q(song_title__icontains=query)
+            ).distinct()
+            return render(request, 'music/index.html', {
+                'all_albums': all_albums,
+                'songs': song_results,
+            })
+        else:
+            return render(request, 'music/index.html', {'all_albums': all_albums})
 
-    #this is query for getting objects from database
-    def get_queryset(self):
-        return Album.objects.all() #getting all objects from database
+def DetailView(request, album_id):
+    if not request.user.is_authenticated():
+        return render(request, 'music/login.html')
+    else:
+        user = request.user
+        album = get_object_or_404(Album, pk=album_id)
+        return render(request, 'music/detail.html', {'album': album, 'user': user})
 
-class DetailView(generic.DetailView):
-    model= Album #this is for getting detail of Album objects
-    template_name= 'music/detail.html'
 
-#here we are creating a class for creating  a new album and inheriting from CreateView
-class AlbumCreate(CreateView):
-    #here we are creating new album_object
-    model= Album
-    fields = ['artist', 'album_title', 'genre', 'album_logo'] #here we are creating fields that user has to be filledup
+def AlbumCreate(request):
+    if not request.user.is_authenticated():
+        return render(request, 'music/login.html')
+    else:
+        form = AlbumForm(request.POST or None, request.FILES or None)
+        if form.is_valid():
+            album = form.save(commit=False)
+            album.user = request.user
+            album.album_logo = request.FILES['album_logo']
+            file_type = album.album_logo.url.split('.')[-1]
+            file_type = file_type.lower()
+            if file_type not in IMAGE_FILE_TYPES:
+                context = {
+                    'album': album,
+                    'form': form,
+                    'error_message': 'Image file must be PNG, JPG, or JPEG',
+                }
+                return render(request, 'music/album_form.html', context)
+            album.save()
+            return render(request, 'music/detail.html', {'album': album})
+        context = {
+            "form": form,
+        }
+        return render(request, 'music/album_form.html', context)
+
 
 class AlbumUpdate(UpdateView):
     #here we are creating new album_object
@@ -147,6 +187,19 @@ def favorite(request, song_id):
     except (KeyError, Song.DoesNotExist):
         return JsonResponse({'success': False})
     finally:
+        return JsonResponse({'success': True})
+
+def favorite_album(request, album_id):
+    album = get_object_or_404(Album, pk=album_id)
+    try:
+        if album.is_favorite:
+            album.is_favorite = False
+        else:
+            album.is_favorite = True
+        album.save()
+    except (KeyError, Album.DoesNotExist):
+        return JsonResponse({'success': False})
+    else:
         return JsonResponse({'success': True})
 
 
