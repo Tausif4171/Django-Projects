@@ -37,8 +37,8 @@
                                     <td>{{ song.album.artist }}</td>
                                     <td>
                                         <a target="_blank" href="{{ song.audio_file.url }}">
-                                            <button type="button" class="btn btn-success btn-xs">
-                                                <span class="glyphicon glyphicon-play"></span>&nbsp; Play
+                                            <button type="button" class="btn btn-info btn-xs">
+                                                <span class="glyphicon glyphicon-file"></span>&nbsp; PDF
                                             </button>
                                         </a>
                                     </td>
@@ -61,6 +61,15 @@
         </div>
 
     </div>
-
+    <div class="footer">
+        <p style="text-align: center;
+        position: fixed;
+        left: 0;
+        bottom: 0;
+        width: 100%;
+        padding: 8px;
+        background-color: DarkSalmon;
+        color: black;">Copyright © 2020 Suraiya. All Rights Reserved</p>
+    </div>   
 </div>
 {% endblock %}

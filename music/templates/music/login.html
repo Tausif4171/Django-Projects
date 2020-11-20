@@ -12,10 +12,11 @@
                     <h3>Log In</h3>
 
                     {% if error_message %}
-                        <p><strong>{{ error_message }}</strong></p>
+                    <p><strong>{{ error_message }}</strong></p>
                     {% endif %}
 
-                    <form class="form-horizontal" role="form" action="{% url 'music:login_user'%}" method="post" enctype="multipart/form-data">
+                    <form class="form-horizontal" role="form" action="{% url 'music:login_user'%}" method="post"
+                        enctype="multipart/form-data">
                         {% csrf_token %}
                         <div class="form-group">
                             <label class="control-label col-sm-2" for="id_username">
@@ -44,12 +45,20 @@
                 <div class="panel-footer">
                     Don't have an account? <a href="{% url 'music:register' %}">Click here</a> to register.
                 </div>
-                
+
             </div>
         </div>
     </div>
-
+    <div class="footer">
+        <p style="text-align: center;
+        position: fixed;
+        left: 0;
+        bottom: 0;
+        width: 100%;
+        padding: 8px;
+        background-color: DarkSalmon;
+        color: black;">Copyright © 2020 Suraiya. All Rights Reserved</p>
+    </div>
 </div>
 
 {% endblock %}
-

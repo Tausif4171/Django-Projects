@@ -22,19 +22,19 @@
                             <h4>{{ album.artist }}</h4>
 
                             <!-- View Details -->
-                            <a href="{% url 'music:detail' album.id %}" class="btn btn-primary btn-sm" role="button">View Details</a>
+                            <a href="{% url 'music:detail' album.id %}" class="btn btn-info btn-sm" role="button">View Details</a>
 
                             <!-- Delete Album -->
                             <form action="{% url 'music:album-delete' album.id %}" method="post" style="display: inline;">
                                 {% csrf_token %}
                                  <input type="hidden" name="album_id" value="{{ album.id }}" />
-                                 <button type="submit" class="btn btn-default btn-sm">
+                                 <button type="submit" class="btn btn-danger btn-sm">
                                     <span class="glyphicon glyphicon-trash"></span>
                                 </button>
                             </form>
 
                             <!-- Favorite Album -->
-                            <a href="{% url 'music:favorite_album' album.id %}" class="btn btn-default btn-sm btn-favorite" >
+                            <a href="{% url 'music:favorite_album' album.id %}" class="btn btn btn-sm btn-favorite" >
                                 <span class="glyphicon glyphicon-star {% if album.is_favorite %}active{% endif %}"></span>
                             </a>
             
@@ -45,7 +45,20 @@
                 
             {% endfor %}
     </div>
-    
-    
+    <br>
+    <br>
+    <br>
+    <br>
+    <div class="footer">
+        <p style="text-align: center;
+        position: fixed;
+        left: 0;
+        bottom: 0;
+        width: 100%;
+        padding: 8px;
+        background-color: DarkSalmon;
+        color: black;">Copyright © 2020 Suraiya. All Rights Reserved</p>
+    </div>    
 </div>
+
 {% endblock %}

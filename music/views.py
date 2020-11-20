@@ -11,7 +11,7 @@ from .models import Album, Song
 from .forms import AlbumForm, SongForm, UserForm
 from django.db.models import Q
 
-AUDIO_FILE_TYPES = ['wav', 'mp3', 'ogg']
+AUDIO_FILE_TYPES = ['wav', 'mp3', 'ogg', 'pdf']
 IMAGE_FILE_TYPES = ['png', 'jpg', 'jpeg']
 
 def IndexView(request):
